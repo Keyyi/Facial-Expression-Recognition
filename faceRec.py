@@ -3,8 +3,8 @@ from matplotlib.patches import Rectangle
 from matplotlib.patches import Circle
 from mtcnn.mtcnn import MTCNN
 
-def draw_image_with_boxes(filename, result_list):
-    img = pyplot.imread(filename)
+def draw_image_with_boxes(path, result_list):
+    img = pyplot.imread(path)
     pyplot.imshow(img)
     ax = pyplot.gca()
     for result in result_list:
@@ -12,12 +12,11 @@ def draw_image_with_boxes(filename, result_list):
         rect = Rectangle((x, y), width, height, fill=False, color='red')
         ax.add_patch(rect)
         for key, value in result['keypoints'].items():
-            dot = Circle(value, radius=2, color='red')
-            ax.add_patch(dot)
+            ax.add_patch(Circle(value, radius=1, color='red'))
     pyplot.show()
  
-def draw_faces(filename, result_list):
-    data = pyplot.imread(filename)
+def draw_faces(path, result_list):
+    data = pyplot.imread(path)
     for i in range(len(result_list)):
         x1, y1, width, height = result_list[i]['box']
         x2, y2 = x1 + width, y1 + height
