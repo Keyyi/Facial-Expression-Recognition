@@ -40,7 +40,9 @@ def save_faces(path, result_list):
         gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
         output[i] = gray.reshape((1, 48*48))
         pyplot.imshow(res)
-    pyplot.show()    
+        break
+    pyplot.show()
+    return gray
     return output
     
 def FaceRec(path):
@@ -53,6 +55,6 @@ def FaceRec(path):
     return output
 
 if __name__ == '__main__':
-    output = FaceRec("./test3.jpg")
+    output = FaceRec("./wbb.jpg")
     
 
