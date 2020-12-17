@@ -19,9 +19,14 @@ def bouding_boxes(path, result_list):
  
 def draw_faces(path, result_list):
     data = pyplot.imread(path)
+    h, w = data.shape[0], data.shape[1]
     for i in range(len(result_list)):
         x1, y1, width, height = result_list[i]['box']
         x2, y2 = x1 + width, y1 + height
+        x1 = max(0, x1)
+        x2 = min(x2, w)
+        y1 = max(0, y1)
+        y2 = min(y2, h)
         pyplot.subplot(1, len(result_list), i+1)
         pyplot.axis('off')
         pyplot.imshow(data[y1:y2, x1:x2])
@@ -29,10 +34,15 @@ def draw_faces(path, result_list):
 
 def save_faces(path, result_list):
     data = pyplot.imread(path)
+    h, w = data.shape[0], data.shape[1]
     output = np.empty((len(result_list), 48*48))
     for i in range(len(result_list)):
         x1, y1, width, height = result_list[i]['box']
         x2, y2 = x1 + width, y1 + height
+        x1 = max(0, x1)
+        x2 = min(x2, w)
+        y1 = max(0, y1)
+        y2 = min(y2, h)        
         pyplot.subplot(1, len(result_list), i+1)
         pyplot.axis('off')
         img = data[y1:y2, x1:x2]
@@ -40,11 +50,9 @@ def save_faces(path, result_list):
         gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
         output[i] = gray.reshape((1, 48*48))
         pyplot.imshow(res)
-        break
     pyplot.show()
-    return gray
     return output
-    
+
 def FaceRec(path):
     img = pyplot.imread(path)
     detector = MTCNN()
@@ -63,6 +71,6 @@ def FaceRec(path):
     return output
 
 if __name__ == '__main__':
-    output = FaceRec("./test2.jpg")
+    output = FaceRec("./train_00002_aligned.jpg")
     
 
