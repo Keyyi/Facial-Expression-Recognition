@@ -45,6 +45,7 @@ class DeviceDataLoader():
 def evaluate(model, val_loader):
 # This function will evaluate the model and give back the val acc and loss
     model.eval()
+    print(model)
     outputs = [model.validation_step(batch) for batch in val_loader]
     return model.validation_epoch_end(outputs)
     
@@ -117,9 +118,9 @@ def main():
     '''
     npzfile = np.load("./read_images/raf_db.npz")
     train_images = npzfile["inputs_train"]
-    train_labels = npzfile["target_train"]
+    train_labels = np.argmax(npzfile["target_train"], axis=1)
     test_images = npzfile["inputs_valid"]
-    test_labels = npzfile["target_valid"]
+    test_labels = np.argmax(npzfile["target_valid"], axis=1)
     
     train_trfm = transforms.Compose(
     [

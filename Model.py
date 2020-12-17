@@ -6,7 +6,7 @@ from torchvision import transforms, utils
 from torchvision.transforms import ToTensor
 
 classes = {
-    0: 'Angry', 1: 'Disgust', 2: 'Fear', 3: 'Happy', 4: 'Sad', 5: 'Surprise', 6: 'Neutral'
+    0: 'Surprise', 1: 'Fear', 2: 'Disgust', 3: 'Happy', 4: 'Sad', 5: 'Anger', 6: 'Neutral'
 }
 
 def accuracy(outputs, labels):
@@ -37,13 +37,9 @@ class FERBase(nn.Module):
     def epoch_end(self, epoch, result):
         print("Epoch [{}], last_lr: {:.5f}, train_loss: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
             epoch, result['lrs'][-1], result['train_loss'], result['val_loss'], result['val_acc']))
-            
 
 def conv_block(in_chnl, out_chnl, pool=False, padding=1):
-    layers = [
-        nn.Conv2d(in_chnl, out_chnl, kernel_size=3, padding=padding),
-        nn.BatchNorm2d(out_chnl),
-        nn.ReLU(inplace=True)]
+    layers = [nn.Conv2d(in_chnl, out_chnl, kernel_size=3, padding=padding), nn.BatchNorm2d(out_chnl), nn.ReLU(inplace=True)]
     if pool: layers.append(nn.MaxPool2d(2))
     return nn.Sequential(*layers)
 
