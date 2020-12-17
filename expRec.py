@@ -21,7 +21,7 @@ class FERDataset(Dataset):
         return len(self.X)
 
     def __getitem__(self, i):
-        data = X[i]
+        data = self.X[i]
         data = np.asarray(data).astype(np.uint8).reshape(48,48,1)
         data = self.transforms(data)
         label = self.y[i]
@@ -115,7 +115,7 @@ def main():
     test_images = npzfile2["inputs_val"]
     test_labels = npzfile2["target_val"]
     '''
-    npzfile = np.load("./read_images/raf_train1_db.npz")
+    npzfile = np.load("./read_images/raf_db.npz")
     train_images = npzfile["inputs_train"]
     train_labels = npzfile["target_train"]
     test_images = npzfile["inputs_valid"]
