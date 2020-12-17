@@ -65,12 +65,13 @@ def FaceRec(path):
     angles = []
     for i in range(len(right_eyes)):
         angles.append((right_eyes[i][1] - left_eyes[i][1]) / (right_eyes[i][0] - left_eyes[i][0]))
+    print(len(faces))
     bouding_boxes(path, faces)
     draw_faces(path, faces)
     output = save_faces(path, faces)
     return output
 
 if __name__ == '__main__':
-    output = FaceRec("./train_00002_aligned.jpg")
+    output = FaceRec("./test.jpg")
     
 
