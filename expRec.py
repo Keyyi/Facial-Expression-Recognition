@@ -1,5 +1,4 @@
 # Importing the needed modules
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import torch, os
@@ -22,7 +21,7 @@ class FERDataset(Dataset):
         return len(self.X)
 
     def __getitem__(self, i):
-        data = [int(m) for m in self.X[i].split(' ')]
+        data = X[i]
         data = np.asarray(data).astype(np.uint8).reshape(48,48,1)
         data = self.transforms(data)
         label = self.y[i]
@@ -87,6 +86,7 @@ def fit(epochs, max_lr, model, train_loader, val_loader, weight_decay, grad_clip
         model.epoch_end(epoch, result)
         history.append(result)
     return history
+    
 def plot_losses(history):
     train_losses = [x.get('train_loss') for x in history]
     val_losses = [x['val_loss'] for x in history]
@@ -107,13 +107,20 @@ def plot_lrs(history):
     
 def main():
     print("Get data successfully")
-    df = pd.read_csv('fer2013.csv')
-    df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
-    df_test = df[df.Usage == 'PrivateTest'].drop(['Usage'], axis=1).reset_index().drop(['index'], 1)
-    train_images = df_train.iloc[:, 1]
-    train_labels = df_train.iloc[:, 0]
-    test_images = df_test.iloc[:, 1]
-    test_labels = df_test.iloc[:, 0]
+    '''
+    npzfile1 = np.load("./read_images/raf_train1_db.npz")
+    train_images = npzfile1["inputs_train"]
+    train_labels = npzfile1["target_train"]
+    npzfile2 = np.load("./read_images/raf_val_db.npz")
+    test_images = npzfile2["inputs_val"]
+    test_labels = npzfile2["target_val"]
+    '''
+    npzfile = np.load("./read_images/raf_train1_db.npz")
+    train_images = npzfile["inputs_train"]
+    train_labels = npzfile["target_train"]
+    test_images = npzfile["inputs_valid"]
+    test_labels = npzfile["target_valid"]
+    
     train_trfm = transforms.Compose(
     [
         transforms.ToPILImage(),
