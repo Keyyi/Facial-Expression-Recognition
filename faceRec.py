@@ -71,6 +71,6 @@ def FaceRec(path):
     return output
 
 if __name__ == '__main__':
-    output = FaceRec("./test.jpg")
+    output = FaceRec("./test3.JPG")
     
 
