@@ -5,7 +5,7 @@ from mtcnn.mtcnn import MTCNN
 import cv2
 import numpy as np
 
-def draw_image_with_boxes(path, result_list):
+def bouding_boxes(path, result_list):
     img = pyplot.imread(path)
     pyplot.imshow(img)
     ax = pyplot.gca()
@@ -49,12 +49,20 @@ def FaceRec(path):
     img = pyplot.imread(path)
     detector = MTCNN()
     faces = detector.detect_faces(img)
-    draw_image_with_boxes(path, faces)
+    right_eyes = []
+    left_eyes = []
+    for face in faces:
+        right_eyes.append(face['keypoints']['right_eye'])
+        left_eyes.append(face['keypoints']['left_eye'])
+    angles = []
+    for i in range(len(right_eyes)):
+        angles.append((right_eyes[i][1] - left_eyes[i][1]) / (right_eyes[i][0] - left_eyes[i][0]))
+    bouding_boxes(path, faces)
     draw_faces(path, faces)
     output = save_faces(path, faces)
     return output
 
 if __name__ == '__main__':
-    output = FaceRec("./wbb.jpg")
+    output = FaceRec("./test2.jpg")
     
 
