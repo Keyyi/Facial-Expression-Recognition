@@ -110,11 +110,24 @@ def plot_lrs(history):
 def main():
     print("Get data successfully")
     npzfile = np.load("./read_images/raf_db.npz")
+    npzfile1 = np.load("./read_images/toronto_face.npz")
+    
     train_images = npzfile["inputs_train"]
-    print(train_images.shape)
     train_labels = np.argmax(npzfile["target_train"], axis=1)
     test_images = npzfile["inputs_valid"]
     test_labels = np.argmax(npzfile["target_valid"], axis=1)
+    
+    train_images1 = npzfile1["inputs_train"]
+    train_labels1 = npzfile1["target_train"]
+    test_images1 = npzfile1["inputs_valid"]
+    test_labels1 = npzfile1["target_valid"]
+    
+    train_images = np.concatenate((train_images, train_images1))
+    train_labels = np.concatenate((train_labels, train_labels1))
+    test_images = np.concatenate((test_images, test_images1))
+    test_labels = np.concatenate((test_labels, test_labels1))
+    
+    
     '''
     df = pd.read_csv("fer2013.csv")
     df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
