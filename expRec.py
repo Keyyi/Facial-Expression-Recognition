@@ -250,7 +250,7 @@ def main():
     random_seed = 42
     torch.manual_seed(random_seed)
     
-    batch_num = 400
+    batch_num = 120
     print("Get train_dl successfully")
     train_dl = DataLoader(train_data, batch_num, shuffle=True, num_workers=4, pin_memory=True)
     val_dl = DataLoader(val_data, batch_num*2, num_workers=4, pin_memory=True)
@@ -266,7 +266,7 @@ def main():
     grad_clip = 0.1
     weight_decay = 1e-4
     print("Begin fit")
-    history = fit(30, max_lr, model, train_dl, val_dl, weight_decay, grad_clip, torch.optim.Adam)
+    history = fit(81, max_lr, model, train_dl, val_dl, weight_decay, grad_clip, torch.optim.Adam)
     torch.save(model.state_dict(), '9.pth')
     plot_losses(history)
     plt.figure()
