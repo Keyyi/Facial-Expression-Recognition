@@ -9,6 +9,7 @@ from torchvision import transforms, utils
 from torchvision.transforms import ToTensor
 from torchvision.utils import make_grid
 from Model import *
+import pandas as pd
 
 class FERDataset(Dataset):
 
@@ -108,19 +109,47 @@ def plot_lrs(history):
     
 def main():
     print("Get data successfully")
-    '''
-    npzfile1 = np.load("./read_images/raf_train1_db.npz")
-    train_images = npzfile1["inputs_train"]
-    train_labels = npzfile1["target_train"]
-    npzfile2 = np.load("./read_images/raf_val_db.npz")
-    test_images = npzfile2["inputs_val"]
-    test_labels = npzfile2["target_val"]
-    '''
     npzfile = np.load("./read_images/raf_db.npz")
     train_images = npzfile["inputs_train"]
+    print(train_images.shape)
     train_labels = np.argmax(npzfile["target_train"], axis=1)
     test_images = npzfile["inputs_valid"]
     test_labels = np.argmax(npzfile["target_valid"], axis=1)
+    
+    df = pd.read_csv("fer2013.csv")
+    df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
+    df_test = df[df.Usage == 'PrivateTest'].drop(['Usage'], axis=1).reset_index().drop(['index'], 1)
+    
+    train_images_13 = df_train.iloc[:, 1]
+    train_labels_13 = df_train.iloc[:, 0]
+    test_images_13 = df_test.iloc[:, 1]
+    test_labels_13 = df_test.iloc[:, 0]
+    
+    train_images_13_np = np.zeros((len(train_images_13), 48 * 48), dtype="uint8")
+    train_labels_13_np = np.zeros((len(train_labels_13),), dtype="int")
+    
+    for i in range(len(train_images_13)):
+        data = [int(m) for m in train_images_13[i].split(' ')]
+        train_images_13_np[i] = np.asarray(data).astype(np.uint8)
+        train_labels_13_np[i] = int(train_labels_13[i])
+        
+    test_images_13_np = np.zeros((len(test_images_13),48 * 48), dtype="uint8")
+    test_labels_13_np = np.zeros((len(test_images_13),), dtype="int")
+    
+    for i in range(len(test_images_13)):
+        data = [int(m) for m in test_images_13[i].split(' ')]
+        test_images_13_np[i] = np.asarray(data).astype(np.uint8)
+        test_labels_13_np[i] = int(test_labels_13[i])
+        
+    train_images = np.concatenate((train_images, train_images_13_np))
+    train_labels = np.concatenate((train_labels, train_labels_13_np))
+    test_images = np.concatenate((test_images, test_images_13_np))
+    test_labels = np.concatenate((test_labels, test_labels_13_np))
+    
+    print("shape of train_images", train_images.shape)
+    print("shape of train_labels", train_labels.shape)
+    print("shape of test_images", test_images.shape)
+    print("shape of test_labels", test_labels.shape)
     
     train_trfm = transforms.Compose(
     [
