@@ -82,8 +82,9 @@ def batch(size):
     for i in range(size):
         pyplot.subplot(4, 30, i+1)
         pyplot.imshow(train_images[random_permutation[i]].reshape((48,48)),interpolation='nearest')
-    pyplot.axis('off')
+        pyplot.axis('off')
     pyplot.savefig("test.png", bbox_inches='tight')
+    pyplot.show()
     
     
 if __name__ == "__main__":
