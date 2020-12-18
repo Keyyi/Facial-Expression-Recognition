@@ -65,7 +65,7 @@ def select_knn_model(improvement: bool):
     best_k = -1
     best_perform = 0.0
     
-    k_set = [(i+1) for i in range(20)]
+    k_set = [(i+1) for i in range(5)]
     for value in k_set:
         print(value)
         if improvement:
@@ -91,8 +91,8 @@ def select_knn_model(improvement: bool):
     return result
     
 def draw_graph(res,title):
-    validation_set = [res[item] for item in range(1,21)]
-    k_set = [(i+1) for i in range(20)]
+    validation_set = [res[item] for item in range(1,6)]
+    k_set = [(i+1) for i in range(5)]
 
     plt.plot(k_set,validation_set,label="validation")
     plt.xlabel("k")
@@ -104,11 +104,9 @@ def draw_graph(res,title):
     
 ###########------main------###########
 if __name__ == '__main__':
-    
     res = select_knn_model(False)
     draw_graph(res,"Original Graph")
-    for i in range(1,5):
+    for i in range(1,6):
         print("When k is",i,", the validation accuracy is",res[i])
-    
     improve_res = select_knn_model(True)
     draw_graph(improve_res,"Improvement Graph")

@@ -24,8 +24,8 @@ if __name__ == "__main__":
     model = Model(1, 7)
     softmax = torch.nn.Softmax(dim=1)
     model.load_state_dict(torch.load('9.pth', map_location=get_default_device()))
-    out, faces = FaceRec("test2.jpg")
-    image = cv2.imread("test2.jpg")
+    out, faces = FaceRec("dl.JPG")
+    image = cv2.imread("dl.JPG")
     for i, face in zip(out, faces):
         img = torch.from_numpy(i.reshape((48, 48)))
         img = imgTensor(img)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         image = face_to_emoji(image, face, index)
         print(prediction['label'], prediction['probability'])
     cv2.imshow("face_to_emoji", image)
-    cv2.waitKey()
+    cv2.waitKey(1)
     cv2.destroy()    
 
 

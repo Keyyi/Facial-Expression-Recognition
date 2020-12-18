@@ -201,7 +201,7 @@ def train(model, forward, backward, update, alpha, num_epochs, batch_size):
         valid_acc: Validation accuracy.
     """
     inputs_train, inputs_valid, inputs_test, target_train, target_valid, \
-        target_test = load_data("data/toronto_face.npz")
+        target_test = load_data("read_images/toronto_face.npz")
     rnd_idx = np.arange(inputs_train.shape[0])
     
     train_ce_list = []
@@ -356,9 +356,9 @@ def main():
 
     # Hyper-parameters. Modify them if needed.
     num_hiddens = [64, 32]
-    alpha = 0.01
+    alpha = 0.001
     num_epochs = 1000
-    batch_size = 100
+    batch_size = 120
 
     # Input-output dimensions.
     num_inputs = 2304
@@ -384,7 +384,7 @@ def main():
     stats = train(model, nn_forward, nn_backward, nn_update, alpha,
                   num_epochs, batch_size)
                   
-    inputs_train, inputs_valid, inputs_test, target_train, target_valid, target_test = load_data("data/toronto_face.npz")
+    inputs_train, inputs_valid, inputs_test, target_train, target_valid, target_test = load_data("read_images/toronto_face.npz")
     print(inputs_test.shape)
     print(target_test.shape)
     wbb =  FaceRec("./wbb.jpg")
