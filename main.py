@@ -34,7 +34,8 @@ if __name__ == "__main__":
         image = face_to_emoji(image, face, index)
         print(prediction['label'], prediction['probability'])
     cv2.imshow("face_to_emoji", image)
-    cv2.waitKey(1)
+    cv2.imwrite("face_to_emoji.jpg", image)
+    cv2.waitKey()
     cv2.destroy()    
 
 
