@@ -155,6 +155,8 @@ def main():
     train_labels = np.concatenate((train_labels, train_labels1))
     test_images = np.concatenate((test_images, test_images1))
     test_labels = np.concatenate((test_labels, test_labels1))
+    
+    
     '''
     df = pd.read_csv("fer2013.csv")
     df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
