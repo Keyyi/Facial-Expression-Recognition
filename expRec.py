@@ -131,7 +131,20 @@ def main():
     for i in range(len(train_images_13)):
         data = [int(m) for m in train_images_13[i].split(' ')]
         train_images_13_np[i] = np.asarray(data).astype(np.uint8)
-        train_labels_13_np[i] = int(train_labels_13[i])
+        if int(train_labels_13[i]) == 0:
+            train_labels_13_np[i] = 5
+        else if int(train_labels_13[i]) == 1:
+            train_labels_13_np[i] = 2
+        else if int(train_labels_13[i]) == 2:
+            train_labels_13_np[i] = 1
+        else if int(train_labels_13[i]) == 3:
+            train_labels_13_np[i] = 3
+        else if int(train_labels_13[i]) == 4:
+            train_labels_13_np[i] = 1
+        else if int(train_labels_13[i]) == 5:
+            train_labels_13_np[i] = 0
+        else if int(train_labels_13[i]) == 6:
+            train_labels_13_np[i] = 6
         
     test_images_13_np = np.zeros((len(test_images_13),48 * 48), dtype="uint8")
     test_labels_13_np = np.zeros((len(test_images_13),), dtype="int")
@@ -139,7 +152,20 @@ def main():
     for i in range(len(test_images_13)):
         data = [int(m) for m in test_images_13[i].split(' ')]
         test_images_13_np[i] = np.asarray(data).astype(np.uint8)
-        test_labels_13_np[i] = int(test_labels_13[i])
+        if int(test_labels_13[i]) == 0:
+            test_labels_13_np[i] = 5
+        else if int(test_labels_13[i]) == 1:
+            test_labels_13_np[i] = 2
+        else if int(test_labels_13[i]) == 2:
+            test_labels_13_np[i] = 1
+        else if int(test_labels_13[i]) == 3:
+            test_labels_13_np[i] = 3
+        else if int(test_labels_13[i]) == 4:
+            test_labels_13_np[i] = 1
+        else if int(test_labels_13[i]) == 5:
+            test_labels_13_np[i] = 0
+        else if int(test_labels_13[i]) == 6:
+            test_labels_13_np[i] = 6
         
     train_images = np.concatenate((train_images, train_images_13_np))
     train_labels = np.concatenate((train_labels, train_labels_13_np))
