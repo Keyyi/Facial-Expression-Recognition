@@ -115,7 +115,7 @@ def main():
     train_labels = np.argmax(npzfile["target_train"], axis=1)
     test_images = npzfile["inputs_valid"]
     test_labels = np.argmax(npzfile["target_valid"], axis=1)
-    
+    '''
     df = pd.read_csv("fer2013.csv")
     df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
     df_test = df[df.Usage == 'PrivateTest'].drop(['Usage'], axis=1).reset_index().drop(['index'], 1)
@@ -133,17 +133,17 @@ def main():
         train_images_13_np[i] = np.asarray(data).astype(np.uint8)
         if int(train_labels_13[i]) == 0:
             train_labels_13_np[i] = 5
-        else if int(train_labels_13[i]) == 1:
+        elif int(train_labels_13[i]) == 1:
             train_labels_13_np[i] = 2
-        else if int(train_labels_13[i]) == 2:
+        elif int(train_labels_13[i]) == 2:
             train_labels_13_np[i] = 1
-        else if int(train_labels_13[i]) == 3:
+        elif int(train_labels_13[i]) == 3:
             train_labels_13_np[i] = 3
-        else if int(train_labels_13[i]) == 4:
+        elif int(train_labels_13[i]) == 4:
             train_labels_13_np[i] = 1
-        else if int(train_labels_13[i]) == 5:
+        elif int(train_labels_13[i]) == 5:
             train_labels_13_np[i] = 0
-        else if int(train_labels_13[i]) == 6:
+        elif int(train_labels_13[i]) == 6:
             train_labels_13_np[i] = 6
         
     test_images_13_np = np.zeros((len(test_images_13),48 * 48), dtype="uint8")
@@ -154,17 +154,17 @@ def main():
         test_images_13_np[i] = np.asarray(data).astype(np.uint8)
         if int(test_labels_13[i]) == 0:
             test_labels_13_np[i] = 5
-        else if int(test_labels_13[i]) == 1:
+        elif int(test_labels_13[i]) == 1:
             test_labels_13_np[i] = 2
-        else if int(test_labels_13[i]) == 2:
+        elif int(test_labels_13[i]) == 2:
             test_labels_13_np[i] = 1
-        else if int(test_labels_13[i]) == 3:
+        elif int(test_labels_13[i]) == 3:
             test_labels_13_np[i] = 3
-        else if int(test_labels_13[i]) == 4:
+        elif int(test_labels_13[i]) == 4:
             test_labels_13_np[i] = 1
-        else if int(test_labels_13[i]) == 5:
+        elif int(test_labels_13[i]) == 5:
             test_labels_13_np[i] = 0
-        else if int(test_labels_13[i]) == 6:
+        elif int(test_labels_13[i]) == 6:
             test_labels_13_np[i] = 6
         
     train_images = np.concatenate((train_images, train_images_13_np))
@@ -176,7 +176,7 @@ def main():
     print("shape of train_labels", train_labels.shape)
     print("shape of test_images", test_images.shape)
     print("shape of test_labels", test_labels.shape)
-    
+    '''
     train_trfm = transforms.Compose(
     [
         transforms.ToPILImage(),

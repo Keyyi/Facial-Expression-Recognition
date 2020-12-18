@@ -25,7 +25,7 @@ if __name__ == "__main__":
     model = FERModel(1, 7)
     softmax = torch.nn.Softmax(dim=1)
     model.load_state_dict(torch.load('9.pth', map_location=get_default_device()))
-    out = FaceRec("test4.jpg")
+    out = FaceRec("test2.jpg")
     for i in out:
         img = torch.from_numpy(i.reshape((48, 48)))
         img = img2tensor(img)
