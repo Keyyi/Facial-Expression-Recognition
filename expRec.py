@@ -11,7 +11,10 @@ from torchvision.utils import make_grid
 from Model import *
 import pandas as pd
 
-class FERDataset(Dataset):
+### Reference:
+### https://medium.com/jovianml/facial-expression-recognition-using-pytorch-b7326ab36157
+
+class Dataset(Dataset):
 
     def __init__(self, images, labels, transforms):
         self.X = images
@@ -56,15 +59,10 @@ def get_lr(optimizer):
         
 def fit(epochs, max_lr, model, train_loader, val_loader, weight_decay, grad_clip, opt_func=torch.optim.Adam):
     torch.cuda.empty_cache()
-    history = []    #keep track of the evaluation results
-
-    # setting upcustom optimizer including weight decay
+    history = []
     optimizer = opt_func(model.parameters(), max_lr, weight_decay=weight_decay)
-    # setting up 1cycle lr scheduler
     sched = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr, epochs=epochs, steps_per_epoch=len(train_loader))
-    
     for epoch in range(epochs):
-        # training
         model.train()
         train_losses = []
         lrs = []
@@ -72,16 +70,11 @@ def fit(epochs, max_lr, model, train_loader, val_loader, weight_decay, grad_clip
             loss = model.training_step(batch)
             train_losses.append(loss)
             loss.backward()
-            
-            if grad_clip:
-                nn.utils.clip_grad_value_(model.parameters(), grad_clip)
-                
+            if grad_clip: nn.utils.clip_grad_value_(model.parameters(), grad_clip)
             optimizer.step()
             optimizer.zero_grad()
-            
             lrs.append(get_lr(optimizer))
             sched.step()
-            
         result = evaluate(model, val_loader)
         result['train_loss'] = torch.stack(train_losses).mean().item()
         result['lrs'] = lrs
@@ -105,7 +98,6 @@ def plot_lrs(history):
     plt.xlabel('Batch no.')
     plt.ylabel('Learning rate')
     plt.title('Learning Rate vs. Batch no.')
-    
     
 def main():
     print("Get data successfully")
@@ -163,9 +155,6 @@ def main():
     train_labels = np.concatenate((train_labels, train_labels1))
     test_images = np.concatenate((test_images, test_images1))
     test_labels = np.concatenate((test_labels, test_labels1))
-    
-    
-    
     '''
     df = pd.read_csv("fer2013.csv")
     df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
@@ -228,7 +217,7 @@ def main():
     print("shape of test_images", test_images.shape)
     print("shape of test_labels", test_labels.shape)
     '''
-    train_trfm = transforms.Compose(
+    train_transform = transforms.Compose(
     [
         transforms.ToPILImage(),
         transforms.Grayscale(num_output_channels=1),
@@ -237,39 +226,39 @@ def main():
         transforms.ToTensor(),
         transforms.Normalize((0.5), (0.5), inplace=True)
     ])
-    val_trfm = transforms.Compose(
+    
+    valid_transform = transforms.Compose(
     [
         transforms.ToPILImage(),
         transforms.Grayscale(num_output_channels=1),
         transforms.ToTensor(),
         transforms.Normalize((0.5), (0.5))
     ])
+    
     print("Initialize train data successfully")
-    train_data = FERDataset(train_images, train_labels, train_trfm)
-    val_data = FERDataset(test_images, test_labels, val_trfm)
-    random_seed = 42
-    torch.manual_seed(random_seed)
-    
+    train_data = Dataset(train_images, train_labels, train_transform)
+    valid_data = Dataset(test_images, test_labels, valid_transform)
+    torch.manual_seed(33)
     batch_num = 120
-    print("Get train_dl successfully")
-    train_dl = DataLoader(train_data, batch_num, shuffle=True, num_workers=4, pin_memory=True)
-    val_dl = DataLoader(val_data, batch_num*2, num_workers=4, pin_memory=True)
+    print("Get trainDataLoader successfully")
+    trainDataLoader = DataLoader(train_data, batch_num, shuffle=True, num_workers=4, pin_memory=True)
+    validDataLoader = DataLoader(valid_data, batch_num*2, num_workers=4, pin_memory=True)
     device = get_default_device()
-    train_dl = DeviceDataLoader(train_dl, device)
-    val_dl = DeviceDataLoader(val_dl, device)
+    trainDataLoader = DeviceDataLoader(trainDataLoader, device)
+    validDataLoader = DeviceDataLoader(validDataLoader, device)
     print("Get model successfully")
-    model = to_device(FERModel(1, 7), device)
+    model = to_device(Model(1, 7), device)
     print("Begin evalute")
-    evaluate(model, val_dl)
-    
+    evaluate(model, validDataLoader)
     max_lr = 0.001
     grad_clip = 0.1
     weight_decay = 1e-4
     print("Begin fit")
-    history = fit(81, max_lr, model, train_dl, val_dl, weight_decay, grad_clip, torch.optim.Adam)
+    trainLog = fit(81, max_lr, model, trainDataLoader, validDataLoader, weight_decay, grad_clip, torch.optim.Adam)
     torch.save(model.state_dict(), '9.pth')
-    plot_losses(history)
+    plot_losses(trainLog)
     plt.figure()
-    plot_lrs(history)
+    plot_lrs(trainLog)
     
-main()
+if __name__ == "__main__":
+    main()

@@ -4,7 +4,7 @@ from Model import *
 from faceRec import *
 from face_to_emoji import *
 
-def img2tensor(x):
+def imgTensor(x):
     transform = transforms.Compose(
             [transforms.ToPILImage(),
             transforms.Grayscale(num_output_channels=1),
@@ -13,7 +13,7 @@ def img2tensor(x):
     return transform(x)
 
 def predict(x):
-    out = model(img2tensor(img)[None])
+    out = model(imgTensor(img)[None])
     scaled = softmax(out)
     prob = torch.max(scaled).item()
     label = classes[torch.argmax(scaled).item()]
@@ -21,14 +21,14 @@ def predict(x):
     return {'label': label, 'probability': prob, 'index': label_num}
     
 if __name__ == "__main__":
-    model = FERModel(1, 7)
+    model = Model(1, 7)
     softmax = torch.nn.Softmax(dim=1)
     model.load_state_dict(torch.load('9.pth', map_location=get_default_device()))
     out, faces = FaceRec("test2.jpg")
     image = cv2.imread("test2.jpg")
     for i, face in zip(out, faces):
         img = torch.from_numpy(i.reshape((48, 48)))
-        img = img2tensor(img)
+        img = imgTensor(img)
         prediction = predict(img)
         index = prediction['index']
         image = face_to_emoji(image, face, index)
