@@ -68,7 +68,7 @@ def FaceRec(path):
     bouding_boxes(path, faces)
     draw_faces(path, faces)
     output = save_faces(path, faces)
-    return output
+    return output, faces
 
 if __name__ == '__main__':
     output = FaceRec("./test3.JPG")
