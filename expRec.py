@@ -122,10 +122,48 @@ def main():
     test_images1 = npzfile1["inputs_valid"]
     test_labels1 = npzfile1["target_valid"]
     
+    
+    for i in range(len(train_labels1)):
+        if train_labels1[i] == 0:
+            train_labels1[i] = 5
+        elif train_labels1[i] == 1:
+            train_labels1[i] = 2
+        elif train_labels1[i] == 2:
+            train_labels1[i] = 1
+        elif train_labels1[i] == 3:
+            train_labels1[i] = 3
+        elif train_labels1[i] == 4:
+            train_labels1[i] = 4
+        elif train_labels1[i] == 5:
+            train_labels1[i] = 0
+        elif train_labels1[i] == 6:
+            train_labels1[i] = 6
+        else:
+            print("wrong train label",train_labels1[i])
+        
+    for i in range(len(test_labels1)):
+        if test_labels1[i] == 0:
+            test_labels1[i] = 5
+        elif test_labels1[i] == 1:
+            test_labels1[i] = 2
+        elif test_labels1[i] == 2:
+            test_labels1[i] = 1
+        elif test_labels1[i] == 3:
+            test_labels1[i] = 3
+        elif test_labels1[i] == 4:
+            test_labels1[i] = 4
+        elif test_labels1[i] == 5:
+            test_labels1[i] = 0
+        elif test_labels1[i] == 6:
+            test_labels1[i] = 6
+        else:
+            print("wrong test label",test_labels1[i])
+    
     train_images = np.concatenate((train_images, train_images1))
     train_labels = np.concatenate((train_labels, train_labels1))
     test_images = np.concatenate((test_images, test_images1))
     test_labels = np.concatenate((test_labels, test_labels1))
+    
     
     
     '''
