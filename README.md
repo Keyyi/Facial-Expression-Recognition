@@ -10,7 +10,7 @@ The label classes are as follows.
 7: Neutral
 
 ## How to train
-First we have to unpiz the file raf_db.npz.zip
+First we have to unzip the file raf_db.npz.zip
 ```
 python expRec.py
 ```
@@ -19,5 +19,5 @@ python expRec.py
 ```
 python main.py
 ```
-if you would like to test another image, you can add it to our CSC420_Project folder and chagne line 96 in main.py,
+if you would like to test another image, you can add it to our CSC420_Project folder and change line 96 in main.py,
 changing the file name to the file name of your newly added image.
