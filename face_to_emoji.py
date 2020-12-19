@@ -10,6 +10,8 @@ def face_to_emoji(img, face, index):
     # First initialize the region of interests
     # with h. Then make sure that roi does not 
     # exceed the boundary of the image.
+    y = max(0, y)
+    x = max(0, x)
     roi = img[y:y+h, x:x+h]
     h, w= roi.shape[0], roi.shape[1]
     l = min(h, w)
