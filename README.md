@@ -12,7 +12,7 @@ The label classes are as follows.
 ## How to train
 First we have to unzip the file raf_db.npz.zip
 ```
-python expRec.py
+python train.py
 ```
 ## How to cover face with an emoji
 
