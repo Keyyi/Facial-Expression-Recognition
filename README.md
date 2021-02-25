@@ -1,4 +1,4 @@
-# Facial Expression Rec
+# Facial Expression Recognition
 
 The label classes are as follows.
 1: Surprise
