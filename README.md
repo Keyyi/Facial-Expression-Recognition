@@ -1,4 +1,4 @@
-# CSC420_Project
+# Facial Expression Rec
 
 The label classes are as follows.
 1: Surprise
