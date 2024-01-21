@@ -8,7 +8,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms, utils
 from torchvision.transforms import ToTensor
 from torchvision.utils import make_grid
-from Model import *
+from model import *
 import pandas as pd
 
 ### Reference:
@@ -114,111 +114,15 @@ def main():
     test_images1 = npzfile1["inputs_valid"]
     test_labels1 = npzfile1["target_valid"]
     
-    
-    for i in range(len(train_labels1)):
-        if train_labels1[i] == 0:
-            train_labels1[i] = 5
-        elif train_labels1[i] == 1:
-            train_labels1[i] = 2
-        elif train_labels1[i] == 2:
-            train_labels1[i] = 1
-        elif train_labels1[i] == 3:
-            train_labels1[i] = 3
-        elif train_labels1[i] == 4:
-            train_labels1[i] = 4
-        elif train_labels1[i] == 5:
-            train_labels1[i] = 0
-        elif train_labels1[i] == 6:
-            train_labels1[i] = 6
-        else:
-            print("wrong train label",train_labels1[i])
-        
-    for i in range(len(test_labels1)):
-        if test_labels1[i] == 0:
-            test_labels1[i] = 5
-        elif test_labels1[i] == 1:
-            test_labels1[i] = 2
-        elif test_labels1[i] == 2:
-            test_labels1[i] = 1
-        elif test_labels1[i] == 3:
-            test_labels1[i] = 3
-        elif test_labels1[i] == 4:
-            test_labels1[i] = 4
-        elif test_labels1[i] == 5:
-            test_labels1[i] = 0
-        elif test_labels1[i] == 6:
-            test_labels1[i] = 6
-        else:
-            print("wrong test label",test_labels1[i])
+    label_mapping = {0: 5, 1: 2, 2: 1, 3: 3, 4: 4, 5: 0, 6: 6}
+    train_labels = np.vectorize(label_mapping.get)(train_labels)
+    test_labels = np.vectorize(label_mapping.get)(test_labels)
     
     train_images = np.concatenate((train_images, train_images1))
     train_labels = np.concatenate((train_labels, train_labels1))
     test_images = np.concatenate((test_images, test_images1))
     test_labels = np.concatenate((test_labels, test_labels1))
     
-    
-    '''
-    df = pd.read_csv("fer2013.csv")
-    df_train = pd.concat([df[(df.Usage == 'Training')], df[df.Usage == 'PublicTest']], ignore_index=True).drop(['Usage'], axis=1)
-    df_test = df[df.Usage == 'PrivateTest'].drop(['Usage'], axis=1).reset_index().drop(['index'], 1)
-    
-    train_images_13 = df_train.iloc[:, 1]
-    train_labels_13 = df_train.iloc[:, 0]
-    test_images_13 = df_test.iloc[:, 1]
-    test_labels_13 = df_test.iloc[:, 0]
-    
-    train_images_13_np = np.zeros((len(train_images_13), 48 * 48), dtype="uint8")
-    train_labels_13_np = np.zeros((len(train_labels_13),), dtype="int")
-    
-    for i in range(len(train_images_13)):
-        data = [int(m) for m in train_images_13[i].split(' ')]
-        train_images_13_np[i] = np.asarray(data).astype(np.uint8)
-        if int(train_labels_13[i]) == 0:
-            train_labels_13_np[i] = 5
-        elif int(train_labels_13[i]) == 1:
-            train_labels_13_np[i] = 2
-        elif int(train_labels_13[i]) == 2:
-            train_labels_13_np[i] = 1
-        elif int(train_labels_13[i]) == 3:
-            train_labels_13_np[i] = 3
-        elif int(train_labels_13[i]) == 4:
-            train_labels_13_np[i] = 1
-        elif int(train_labels_13[i]) == 5:
-            train_labels_13_np[i] = 0
-        elif int(train_labels_13[i]) == 6:
-            train_labels_13_np[i] = 6
-        
-    test_images_13_np = np.zeros((len(test_images_13),48 * 48), dtype="uint8")
-    test_labels_13_np = np.zeros((len(test_images_13),), dtype="int")
-    
-    for i in range(len(test_images_13)):
-        data = [int(m) for m in test_images_13[i].split(' ')]
-        test_images_13_np[i] = np.asarray(data).astype(np.uint8)
-        if int(test_labels_13[i]) == 0:
-            test_labels_13_np[i] = 5
-        elif int(test_labels_13[i]) == 1:
-            test_labels_13_np[i] = 2
-        elif int(test_labels_13[i]) == 2:
-            test_labels_13_np[i] = 1
-        elif int(test_labels_13[i]) == 3:
-            test_labels_13_np[i] = 3
-        elif int(test_labels_13[i]) == 4:
-            test_labels_13_np[i] = 1
-        elif int(test_labels_13[i]) == 5:
-            test_labels_13_np[i] = 0
-        elif int(test_labels_13[i]) == 6:
-            test_labels_13_np[i] = 6
-        
-    train_images = np.concatenate((train_images, train_images_13_np))
-    train_labels = np.concatenate((train_labels, train_labels_13_np))
-    test_images = np.concatenate((test_images, test_images_13_np))
-    test_labels = np.concatenate((test_labels, test_labels_13_np))
-    
-    print("shape of train_images", train_images.shape)
-    print("shape of train_labels", train_labels.shape)
-    print("shape of test_images", test_images.shape)
-    print("shape of test_labels", test_labels.shape)
-    '''
     train_transform = transforms.Compose(
     [
         transforms.ToPILImage(),
@@ -257,7 +161,7 @@ def main():
     weight_decay = 1e-4
     print("Begin fit")
     trainLog = fit(81, max_lr, model, trainDataLoader, validDataLoader, weight_decay, grad_clip, torch.optim.Adam)
-    torch.save(model.state_dict(), '9.pth')
+    torch.save(model.state_dict(), 'model.pth')
     plot_losses(trainLog)
     plt.figure()
     plot_lrs(trainLog)

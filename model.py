@@ -14,7 +14,7 @@ classes = {
 
 def accuracy(outputs, labels):
     _, predictions = torch.max(outputs, dim=1)
-    return torch.tensor(torch.sum(predictions == labels).float() / len(predictions))
+    return torch.tensor(torch.sum(predictions == labels).item() / len(predictions))
 
 class Base(nn.Module):
     def training_step(self, batch):
