@@ -1,76 +1,92 @@
-from matplotlib import pyplot
-from matplotlib.patches import Rectangle
-from matplotlib.patches import Circle
-from mtcnn.mtcnn import MTCNN
+from matplotlib import pyplot as plt
+from matplotlib.patches import Rectangle, Circle
+from mtcnn import MTCNN
 import cv2
 import numpy as np
+import math
 
-def bouding_boxes(path, result_list):
-    img = pyplot.imread(path)
-    pyplot.imshow(img)
-    ax = pyplot.gca()
+def plot_bounding_boxes(img, result_list):
+    plt.imshow(img)
+    ax = plt.gca()
     for result in result_list:
         x, y, width, height = result['box']
         rect = Rectangle((x, y), width, height, fill=False, color='red')
         ax.add_patch(rect)
-        for key, value in result['keypoints'].items():
+        for _, value in result['keypoints'].items():
             ax.add_patch(Circle(value, radius=1, color='red'))
-    pyplot.show()
- 
-def draw_faces(path, result_list):
-    data = pyplot.imread(path)
-    h, w = data.shape[0], data.shape[1]
-    for i in range(len(result_list)):
-        x1, y1, width, height = result_list[i]['box']
-        x2, y2 = x1 + width, y1 + height
-        x1 = max(0, x1)
-        x2 = min(x2, w)
-        y1 = max(0, y1)
-        y2 = min(y2, h)
-        pyplot.subplot(1, len(result_list), i+1)
-        pyplot.axis('off')
-        pyplot.imshow(data[y1:y2, x1:x2])
-    pyplot.show()
+    plt.show()
 
-def save_faces(path, result_list):
-    data = pyplot.imread(path)
-    h, w = data.shape[0], data.shape[1]
-    output = np.empty((len(result_list), 48*48))
-    for i in range(len(result_list)):
-        x1, y1, width, height = result_list[i]['box']
+def plot_faces(img, result_list):
+    for i, result in enumerate(result_list):
+        x1, y1, width, height = result['box']
         x2, y2 = x1 + width, y1 + height
-        x1 = max(0, x1)
-        x2 = min(x2, w)
-        y1 = max(0, y1)
-        y2 = min(y2, h)        
-        pyplot.subplot(1, len(result_list), i+1)
-        pyplot.axis('off')
-        img = data[y1:y2, x1:x2]
-        res = cv2.resize(img, dsize = (48, 48), interpolation=cv2.INTER_CUBIC)
-        gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
-        output[i] = gray.reshape((1, 48*48))
-        pyplot.imshow(res)
-    pyplot.show()
-    return output
+        plt.subplot(1, len(result_list), i+1)
+        plt.axis('off')
+        plt.imshow(img[y1:y2, x1:x2])
+    plt.show()
 
-def FaceRec(path):
-    img = pyplot.imread(path)
-    detector = MTCNN()
-    faces = detector.detect_faces(img)
-    right_eyes = []
-    left_eyes = []
-    for face in faces:
-        right_eyes.append(face['keypoints']['right_eye'])
-        left_eyes.append(face['keypoints']['left_eye'])
+def extract_and_save_faces(img, result_list):
+    output = []
+    for result in result_list:
+        x1, y1, width, height = result['box']
+        x2, y2 = x1 + width, y1 + height
+        cropped_img = img[y1:y2, x1:x2]
+        resized_img = cv2.resize(cropped_img, (48, 48), interpolation=cv2.INTER_CUBIC)
+        gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
+        output.append(gray_img.flatten())
+    return np.array(output)
+
+def calculate_angles(faces):
     angles = []
-    for i in range(len(right_eyes)):
-        angles.append((right_eyes[i][1] - left_eyes[i][1]) / (right_eyes[i][0] - left_eyes[i][0]))
-    bouding_boxes(path, faces)
-    draw_faces(path, faces)
-    output = save_faces(path, faces)
-    return output, faces
+    for face in faces:
+        reye = face['keypoints']['right_eye']
+        leye = face['keypoints']['left_eye']
+        delta_x = reye[0] - leye[0]
+        delta_y = reye[1] - leye[1]
+        angle = math.atan2(delta_y, delta_x) * 180.0 / math.pi
+        angles.append(angle)
+    return angles
+
+
+def face_recognition(path):
+    img = cv2.imread(path)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    detector = MTCNN()
+    faces = detector.detect_faces(img_rgb)
+    plot_bounding_boxes(img_rgb, faces)
+    plot_faces(img_rgb, faces)
+    output = extract_and_save_faces(img_rgb, faces)
+    angles = calculate_angles(faces)
+    return output, faces, angles
+
+def face_to_emoji(img, face, index, angle):
+    path = './emojis/' + str(index) + '.png'
+    x, y, w, h = face['box']
+    y = max(0, y)
+    x = max(0, x)
+    roi = img[y:y+h, x:x+h]
+    h, w = roi.shape[0], roi.shape[1]
+    l = min(h, w)
+    roi = img[y:y+l, x:x+l]
+
+    # # Adjust for the correct rotation direction
+    # Read and rotate emoji
+    emoji = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    emoji_resized = cv2.resize(emoji, (l, l), interpolation=cv2.INTER_AREA)
+    matrix = cv2.getRotationMatrix2D((l / 2, l / 2), -angle, 1)
+    emoji_rotated = cv2.warpAffine(emoji_resized, matrix, (l, l))
+
+    # Combine emoji with ROI
+    # Assuming emoji is a 4-channel image (including alpha)
+    for i in range(l):
+        for j in range(l):
+            if emoji_rotated[i, j][3] != 0:
+                roi[i, j] = emoji_rotated[i, j][:3]
+
+    img[y:y+l, x:x+l] = roi
+    return img
+
 
 if __name__ == '__main__':
-    output = FaceRec("./test3.JPG")
-    
+    output, faces, angles = face_recognition("./test2.jpg")
 

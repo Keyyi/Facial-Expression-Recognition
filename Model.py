@@ -13,8 +13,8 @@ classes = {
 }
 
 def accuracy(outputs, labels):
-    predictions = torch.max(outputs, dim=1)[1]
-    return torch.tensor(torch.sum(predictions==labels).item()/len(predictions))
+    _, predictions = torch.max(outputs, dim=1)
+    return torch.tensor(torch.sum(predictions == labels).float() / len(predictions))
 
 class Base(nn.Module):
     def training_step(self, batch):
@@ -42,9 +42,13 @@ class Base(nn.Module):
             epoch, result['lrs'][-1], result['train_loss'], result['val_loss'], result['val_acc']))
 
 def conv_block(in_chnl, out_chnl, pool=False, padding=1):
-    layers = [nn.Conv2d(in_chnl, out_chnl, kernel_size=3, padding=padding), nn.BatchNorm2d(out_chnl), nn.ReLU(inplace=True)]
-    if pool: layers.append(nn.MaxPool2d(2))
+    layers = [nn.Conv2d(in_chnl, out_chnl, kernel_size=3, padding=padding), 
+              nn.BatchNorm2d(out_chnl), 
+              nn.ReLU(inplace=True)]
+    if pool: 
+        layers.append(nn.MaxPool2d(2))
     return nn.Sequential(*layers)
+
 
 class Model(Base):
     def __init__(self, in_chnls, num_cls):
@@ -67,9 +71,12 @@ class Model(Base):
         return self.classifier(out)
 
 def get_default_device():
-    if torch.cuda.is_available(): return torch.device('cuda')
-    else: return torch.device('cpu')
+    if torch.cuda.is_available(): 
+        return torch.device('cuda')
+    else: 
+        return torch.device('cpu')
     
 def to_device(data, device=get_default_device()):
-    if isinstance(data, (list,tuple)): return [to_device(x, device) for x in data]
+    if isinstance(data, (list,tuple)): 
+        return [to_device(x, device) for x in data]
     return data.to(device, non_blocking=True)
